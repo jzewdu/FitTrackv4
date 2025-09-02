@@ -1,6 +1,87 @@
-// --- Keep your existing task + meals logic ---
-// Only replacing the renderMeals() part and adding drawRing()
+// --- Data ---
+let tasks = [];
+let defaultTasks = [];
+let meals = [];
+let calorieGoal = 3000;
+let proteinGoal = 150;
 
+// --- Tab Switching ---
+function showTab(tabId) {
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active");
+  });
+  document.getElementById(tabId).classList.add("active");
+}
+
+// --- Tasks ---
+function addTask() {
+  const input = document.getElementById("newTaskInput");
+  const text = input.value.trim();
+  if (text) {
+    tasks.push({ text, done: false });
+    input.value = "";
+    renderTasks();
+    saveData();
+  }
+}
+
+function toggleTask(index) {
+  tasks[index].done = !tasks[index].done;
+  renderTasks();
+  saveData();
+}
+
+function renderTasks() {
+  const list = document.getElementById("taskList");
+  list.innerHTML = "";
+  tasks.forEach((task, i) => {
+    const li = document.createElement("li");
+    li.textContent = task.text;
+    li.style.textDecoration = task.done ? "line-through" : "none";
+    li.onclick = () => toggleTask(i);
+    list.appendChild(li);
+  });
+}
+
+// --- Meals ---
+function addMeal() {
+  const calInput = document.getElementById("mealCalories");
+  const protInput = document.getElementById("mealProtein");
+  const calories = parseInt(calInput.value);
+  const protein = parseInt(protInput.value);
+
+  if (calories && protein) {
+    meals.push({ calories, protein });
+    calInput.value = "";
+    protInput.value = "";
+    renderMeals();
+    saveData();
+  }
+}
+
+function renderMeals() {
+  const mealList = document.getElementById("mealList");
+  mealList.innerHTML = "";
+  let totalCalories = 0;
+  let totalProtein = 0;
+
+  meals.forEach((meal) => {
+    totalCalories += meal.calories;
+    totalProtein += meal.protein;
+    const li = document.createElement("li");
+    li.textContent = `🍴 ${meal.calories} cal, ${meal.protein}g protein`;
+    mealList.appendChild(li);
+  });
+
+  document.getElementById("calorieCircle").textContent = `Calories: ${totalCalories}/${calorieGoal}`;
+  document.getElementById("proteinCircle").textContent = `Protein: ${totalProtein}g/${proteinGoal}`;
+
+  // draw progress rings
+  drawRing("calorieRing", Math.min(totalCalories / calorieGoal, 1), "#4facfe");
+  drawRing("proteinRing", Math.min(totalProtein / proteinGoal, 1), "#43e97b");
+}
+
+// --- Progress Rings ---
 function drawRing(canvasId, progress, color) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
@@ -26,25 +107,38 @@ function drawRing(canvasId, progress, color) {
   ctx.stroke();
 }
 
-// Replace inside renderMeals
-function renderMeals() {
-  const mealList = document.getElementById("mealList");
-  mealList.innerHTML = "";
-  let totalCalories = 0;
-  let totalProtein = 0;
+// --- Settings ---
+function saveSettings() {
+  const calInput = document.getElementById("calorieGoalInput");
+  const protInput = document.getElementById("proteinGoalInput");
 
-  meals.forEach((meal) => {
-    totalCalories += meal.calories;
-    totalProtein += meal.protein;
-    const li = document.createElement("li");
-    li.textContent = `🍴 ${meal.calories} cal, ${meal.protein}g protein`;
-    mealList.appendChild(li);
-  });
+  if (calInput.value) calorieGoal = parseInt(calInput.value);
+  if (protInput.value) proteinGoal = parseInt(protInput.value);
 
-  document.getElementById("calorieCircle").textContent = `Calories: ${totalCalories}/${calorieGoal}`;
-  document.getElementById("proteinCircle").textContent = `Protein: ${totalProtein}g/${proteinGoal}`;
-
-  // draw rings
-  drawRing("calorieRing", Math.min(totalCalories / calorieGoal, 1), "#4facfe");
-  drawRing("proteinRing", Math.min(totalProtein / proteinGoal, 1), "#43e97b");
+  saveData();
+  renderMeals();
+  alert("Settings saved!");
 }
+
+// --- Persistence ---
+function saveData() {
+  localStorage.setItem("fittrackData", JSON.stringify({
+    tasks, defaultTasks, meals, calorieGoal, proteinGoal
+  }));
+}
+
+function loadData() {
+  const saved = JSON.parse(localStorage.getItem("fittrackData"));
+  if (saved) {
+    tasks = saved.tasks || [];
+    defaultTasks = saved.defaultTasks || [];
+    meals = saved.meals || [];
+    calorieGoal = saved.calorieGoal || 3000;
+    proteinGoal = saved.proteinGoal || 150;
+  }
+  renderTasks();
+  renderMeals();
+}
+
+// --- Init ---
+window.onload = loadData;
