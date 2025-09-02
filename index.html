@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitTrack</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="app-header">
+    <h1>FitTrack</h1>
+  </div>
+
+  <div id="tasks" class="tab active">
+    <h2>Tasks</h2>
+    <div class="card">
+      <ul id="taskList"></ul>
+      <div class="input-row">
+        <input type="text" id="newTaskInput" placeholder="Add a new task...">
+        <button onclick="addTask()">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="home" class="tab">
+    <h2>Dashboard</h2>
+    <div class="card">
+      <canvas id="calorieRing" width="160" height="160"></canvas>
+      <p id="calorieCircle">Calories: 0/3000</p>
+    </div>
+    <div class="card">
+      <canvas id="proteinRing" width="160" height="160"></canvas>
+      <p id="proteinCircle">Protein: 0/150g</p>
+    </div>
+  </div>
+
+  <div id="calories" class="tab">
+    <h2>Meals</h2>
+    <div class="card">
+      <div class="input-row">
+        <input type="number" id="mealCalories" placeholder="Calories">
+        <input type="number" id="mealProtein" placeholder="Protein (g)">
+        <button onclick="addMeal()">Add</button>
+      </div>
+      <ul id="mealList"></ul>
+    </div>
+  </div>
+
+  <div id="settings" class="tab">
+    <h2>Settings</h2>
+    <div class="card">
+      <label>Daily Calorie Goal</label>
+      <input type="number" id="calorieGoalInput" min="1000" max="6000">
+
+      <label>Daily Protein Goal</label>
+      <input type="number" id="proteinGoalInput" min="50" max="400">
+
+      <h3>Default Tasks</h3>
+      <ul id="settingsTaskList"></ul>
+      <div class="input-row">
+        <input type="text" id="newDefaultTaskInput" placeholder="New default task">
+        <button onclick="addDefaultTask()">+</button>
+      </div>
+      <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+
+  <div class="navbar">
+    <button onclick="showTab('tasks')"><span class="material-icons">checklist</span><br>Tasks</button>
+    <button onclick="showTab('home')"><span class="material-icons">home</span><br>Home</button>
+    <button onclick="showTab('calories')"><span class="material-icons">restaurant</span><br>Calories</button>
+    <button onclick="showTab('settings')"><span class="material-icons">settings</span><br>Settings</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
